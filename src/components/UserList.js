@@ -1,10 +1,10 @@
 import React from 'react'
 import UserCard from './UserCard'
 
-const UserList = ({users, isFetching}) => {
+const UserList = ({users, isFetching, onRemoveUser}) => {
 
     const userList = users.map(user => 
-      <UserCard user={user} key={user.id} />
+      <UserCard user={user} key={user.id} onRemoveUser={onRemoveUser} />
     )
 
     return(

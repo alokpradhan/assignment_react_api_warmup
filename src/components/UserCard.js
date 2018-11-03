@@ -1,8 +1,8 @@
 import React from 'react'
 
-const UserCard = ({user}) => {
+const UserCard = ({user, onRemoveUser}) => {
 
-  const {first_name, last_name, avatar} = user
+  const {first_name, last_name, avatar, id} = user
 
   return(
     <div 
@@ -16,6 +16,7 @@ const UserCard = ({user}) => {
       />
       <div>
         <h4>{first_name} {last_name}</h4>
+        <p onClick={(e) => onRemoveUser(id)}>Delete profile</p>
       </div>
     </div>
   )
