@@ -1,21 +1,24 @@
-import React from 'react'
-import UserCard from './UserCard'
+import React from "react";
+import UserCard from "./UserCard";
 
-const UserList = ({users, isFetching, onRemoveUser}) => {
+const UserList = ({ users, isFetching, onRemoveUser, startEditUser }) => {
+  const userList = users.map(user => (
+    <UserCard
+      user={user}
+      key={user.id}
+      onRemoveUser={onRemoveUser}
+      startEditUser={startEditUser}
+    />
+  ));
 
-    const userList = users.map(user => 
-      <UserCard user={user} key={user.id} onRemoveUser={onRemoveUser} />
-    )
-
-    return(
-      <div className="container">
-        <h1>User List</h1>
-        <div className="card-group">
-          {isFetching ? <p>Loading...</p> : userList}
-        </div>
+  return (
+    <div className="container">
+      <h1>User List</h1>
+      <div className="card-group">
+        {isFetching ? <p>Loading...</p> : userList}
       </div>
-    )
+    </div>
+  );
+};
 
-}
-
-export default UserList
+export default UserList;

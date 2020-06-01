@@ -1,123 +1,166 @@
-import React, {Component} from 'react'
-import App from '../components/App.js'
-import serialize from 'form-serialize'
+import React, { Component } from "react";
+import App from "../components/App.js";
+import serialize from "form-serialize";
 
 class AppContainer extends Component {
-
-  constructor(){
-    super()
+  constructor() {
+    super();
     this.state = {
       users: [],
-      isFetching: false
-    }
+      isFetching: false,
+      userToEdit: null,
+      error: null
+    };
   }
 
-  componentDidMount(){
-    this.setState({isFetching : true})
+  componentDidMount() {
+    this.setState({ isFetching: true });
 
-    fetch('https://reqres.in/api/users')
+    fetch("https://reqres.in/api/users")
       .then(response => response.json())
       .then(json => {
         this.setState({
           users: json.data,
           isFetching: false
-        })
-      })
+        });
+      });
   }
 
-  onAddUser = (event) => {
-    event.preventDefault()
-    const form = event.target
-    const body = serialize(form, {hash: true})
+  onAddUser = event => {
+    event.preventDefault();
+    const form = event.target;
+    const body = serialize(form, { hash: true });
+    console.log(body);
 
-    const headers = new Headers()
-    headers.append('Content-Type', 'application/json')
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
 
     const options = {
-      headers, 
-      method: 'POST',
+      headers,
+      method: "POST",
       body: JSON.stringify(body)
-    }
+    };
 
-    this.setState({isFetching: true})
+    this.setState({ isFetching: true });
 
-    fetch('https://reques.in/api/users', options)
-      .then((response) => {
-        if(!response.ok){
-          throw new Error(`${response.status} ${response.statusText}`)
+    fetch("https://reques.in/api/users", options)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`${response.status} ${response.statusText}`);
         }
-        return response.json()
+        return response.json();
       })
-      .then((json) => {
-        this.setState({
-          isFetching: false,
-          users: [
-            ...this.state.users,
-            json
-          ]
-        }, () => {form.reset()})
+      .then(json => {
+        this.setState(
+          {
+            isFetching: false,
+            users: [...this.state.users, json]
+          },
+          () => {
+            form.reset();
+          }
+        );
       })
-      .catch((error) => {
-        console.log(error)
+      .catch(error => {
+        console.log(error);
         this.setState({
           isFetching: false,
           error
-        })
-      })
-  }
+        });
+      });
+  };
 
-  onRemoveUser = (userId) => {
-
-    const header = new Headers()
-    header.append('Content-type', 'application/json')
+  onRemoveUser = userId => {
+    const header = new Headers();
+    header.append("Content-type", "application/json");
 
     const options = {
       header,
-      method: 'DELETE'
-    }
+      method: "DELETE"
+    };
 
-    this.setState({isFetching: true})
+    this.setState({ isFetching: true });
 
-    fetch('https://reques.in/api/users/'+ userId, options)
-      .then((response) => {
-        if(!response.ok){
-          throw new Error(`${response.status} ${response.statusText}`)
+    fetch("https://reques.in/api/users/" + userId, options)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`${response.status} ${response.statusText}`);
         }
-        return response.json()
+        return response.json();
       })
-      .then((json) => {
+      .then(json => {
         this.setState({
-
           users: () => {
-            let listOfUsersAfterDeletion = []
-            for(let i = 0; i < this.state.users.length; i++){
-              if(this.state.users[i].id !== json.id){ 
-                listOfUsersAfterDeletion.push(this.state.users[i])
+            let listOfUsersAfterDeletion = [];
+            for (let i = 0; i < this.state.users.length; i++) {
+              if (this.state.users[i].id !== json.id) {
+                listOfUsersAfterDeletion.push(this.state.users[i]);
               }
             }
-            console.log(listOfUsersAfterDeletion)
-            return listOfUsersAfterDeletion
+            console.log(listOfUsersAfterDeletion);
+            return listOfUsersAfterDeletion;
           },
 
           isFetching: false
-        })
+        });
       })
-      .catch((error) => {
-        console.log(error)
+      .catch(error => {
+        console.log(error);
         this.setState({
-          isFetching: false, 
+          isFetching: false,
           error
-        })
-      })
+        });
+      });
+  };
 
-  }
+  onEditUser = event => {
+    event.preventDefault();
+    const form = event.target;
+    const header = new Headers();
+    header.append("Content-type", "application/json");
 
-  render(){
+    const body = serialize(form, { hash: true });
+
+    const options = {
+      header,
+      method: "PUT",
+      body: JSON.stringify(body)
+    };
+
+    fetch("https://reques.in/api/users", options);
+
+    this.setState({
+      userToEdit: null
+    });
+  };
+
+  startEditUser = user => {
+    this.setState({
+      userToEdit: user
+    });
+  };
+
+  editingUserField = (field, value) => {
+    let tempUser = this.state.userToEdit;
+    tempUser[field] = value;
+
+    this.setState({
+      userToEdit: tempUser
+    });
+  };
+
+  render() {
     return (
-      <App onAddUser={this.onAddUser} onRemoveUser={this.onRemoveUser} {...this.state} />
-    ) 
+      <App
+        onAddUser={this.onAddUser}
+        onRemoveUser={this.onRemoveUser}
+        onEditUser={this.onEditUser}
+        startEditUser={this.startEditUser}
+        editingUserField={this.editingUserField}
+        {...this.state}
+      />
+    );
   }
-
 }
 
-export default AppContainer
+export default AppContainer;
